@@ -29,7 +29,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/roni/PycharmProjects/TextCompression/venv"
+set -gx VIRTUAL_ENV "/home/roni/PycharmProjects/text_compressing/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

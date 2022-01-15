@@ -1,4 +1,3 @@
-import pickle
 import sys,math
 import os
 
@@ -119,7 +118,6 @@ class HuffmenEncodeing:
         modified_bit_st = bin(codec_info_len)[2:].rjust(4,'0')\
                             +bin(codec_len)[2:].rjust(codec_info_len,'0')\
                             +bit_st+r_codecs_bit_string
-        print(f"func: add_reversed_codecs:pre_info:-{codec_info_len}len:-{codec_len}")
         return modified_bit_st
 
     def getbitstream(self, bit_st):
@@ -146,7 +144,6 @@ class HuffmenEncodeing:
     def remove_padding(self, bit_string):
         padding_info, string = bit_string[:4], bit_string[4:]
         padding_length = int(padding_info,base=2)
-        print(f"padding length: {padding_length}")
 
         return string[:-padding_length]
 
@@ -155,7 +152,6 @@ class HuffmenEncodeing:
         pre_codec_info, bit_string = int(bit_string[:4],base=2), bit_string[4:]
         codec_info, bit_string = int(bit_string[:pre_codec_info],base=2), bit_string[pre_codec_info:]
         bit_codecs, bit_string = bit_string[-codec_info*8:], bit_string[:-codec_info*8]
-        print(f"func: extract_codec:pre_info:-{pre_codec_info} codec_info:-{codec_info}")
         codecs = self.convert_to_string(bit_codecs)
         for pair in codecs.split(sep="*;*"):
             key,value = pair.split(sep="*:*")
