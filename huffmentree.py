@@ -1,13 +1,23 @@
-import sys,math
+import math
 import os
+
+colored_string = lambda color_code,msg:f"{color_code}{msg}\33[0;30m"
 
 
 class HuffmenEncodeing:
-    def __init__(self, path):
-        self.file_path = path
+    def __init__(self, file_path, output=None):
+        self.file_path = file_path
+        self.output_path = ""
         self.codecs = {}
         self.reversed_codecs = {}
         self.encoding_byte_size = 2
+
+        if output:
+            self.output_path = output
+        else:
+            path, file = os.path.split(self.file_path)
+            self.output_path = os.path.join(path,f"{file.split('.')[0]}.bin")
+
 
     class HuffmenTreeNode:
         def __init__(self, super_self, ch=None,value=None):
@@ -138,7 +148,6 @@ class HuffmenEncodeing:
         pad_info_length = 4
         length = pad_info_length+len(bit_string)
         pading_length =  8-length%8
-        print(f"padding length: {pading_length}")
         return bin(pading_length)[2:].rjust(4,'0')+bit_string+"0"*pading_length
 
     def remove_padding(self, bit_string):
@@ -176,9 +185,8 @@ class HuffmenEncodeing:
 
     def compress(self):
         # read the text from the file
-        path, file = os.path.split(self.file_path)
-        output_path = os.path.join(path,f"{file.split('.')[0]}.bin")
-        with open(self.file_path,'r') as input_file, open(output_path, 'wb') as output_file:
+
+        with open(self.file_path,'r') as input_file, open(self.output_path, 'wb') as output_file:
             text = ''.join(input_file.readlines())
             p_list = self.get_priority_que(text)
 
@@ -189,7 +197,17 @@ class HuffmenEncodeing:
             padded_bit_st = self.add_padding(bit_st)
             bit_stream = self.getbitstream(padded_bit_st)
             output_file.write(bit_stream)
-            # print(len(bit_st))
+        if os.stat(self.file_path).st_size<os.stat(self.output_path).st_size:
+            msg = """
+                It is not wise to compress a reletively small file. 
+            """
+            print(colored_string('\33[;31m',msg),end='')
+            msg = """
+                The result could be a nightmare when you'll see that 
+                the compressed file is larger that it's original size.
+            """
+            print(colored_string('\33[1;31m',msg))
+
 
     def decompress(self):
         path, file = os.path.split(self.file_path)
@@ -206,3 +224,4 @@ class HuffmenEncodeing:
             bit_string = self.extract_codec_info_and_save(bit_string)
             text_string = self.decode_bit_string(bit_string)
             output_file.write(text_string)
+

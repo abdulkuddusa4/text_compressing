@@ -11,6 +11,12 @@ def main(cmd,path):
     elif cmd == "decompress":
         obj = hft.HuffmenEncodeing(path)
         obj.decompress()
+    else:
+        msg = """
+            invalid command.
+            command: compress(for compressing)/decompress(for decompressing)
+        """
+        print(colored_string('\33[31m',msg))
 
 if __name__ == "__main__":
     try:
