@@ -101,7 +101,6 @@ class HuffmenEncodeing:
             raise TypeError(f"Expected encoded bytes object not {type(byte_string)}")
         bit_st = ""
         for ch in byte_string:
-            if ch>=128:print(ch)
             byte=bin(ch)[2:].rjust(8,'0')
             bit_st+=byte
         return bit_st
@@ -119,12 +118,46 @@ class HuffmenEncodeing:
                 cur_bits = ""
         return bytes(byte_values).decode()
 
+    def get_reversed_codecs_in_bit_st(self):
+        values = ""
+        chars = ""
+        max_code_len = 0
+        for i in self.reversed_codecs.keys():
+            max_code_len = len(i) if len(i)>max_code_len  else max_code_len
+
+
+        bits_needed_to_store_code_len = math.ceil(math.log2(max_code_len+1))
+        for value,key in self.reversed_codecs.items():
+            values+=bin(len(value))[2:].rjust(bits_needed_to_store_code_len,'0')+value
+            chars+=key
+
+        encoded_chars = chars.encode()
+        encoded_chars_len = len(encoded_chars)
+        chars_in_bit_st = self.convert_to_bit_string(encoded_chars)
+
+        bits_for_encoded_chars_len = math.ceil(math.log2(encoded_chars_len))
+        bits_for_prefix_code_len = math.ceil(math.log2(bits_needed_to_store_code_len))
+
+        codecs = bin(bits_for_encoded_chars_len)[2:].rjust(4,'0')\
+                +bin(bits_needed_to_store_code_len)[2:].rjust(4,'0')\
+                +bin(encoded_chars_len)[2:].rjust(bits_for_encoded_chars_len)\
+                +chars_in_bit_st+values
+        return codecs
+
+
+
+
+# vaues
+
+
+
     def add_reversed_codecs(self, bit_st):
-        r_codecs_st = '*;*'.join(['*:*'.join([key,value]) for key,value in self.reversed_codecs.items()])
-        r_codecs_st = r_codecs_st.encode()
-        r_codecs_bit_string = self.convert_to_bit_string(r_codecs_st)
-        codec_len = len(r_codecs_st)
-        codec_info_len = math.ceil(math.log2(codec_len))
+
+
+        r_codecs_bit_string = self.get_reversed_codecs_in_bit_st()
+        codec_len = len(r_codecs_bit_string)
+        codec_info_len = math.ceil(math.log2(codec_len+1))
+        print(codec_info_len)
         modified_bit_st = bin(codec_info_len)[2:].rjust(4,'0')\
                             +bin(codec_len)[2:].rjust(codec_info_len,'0')\
                             +bit_st+r_codecs_bit_string
@@ -160,27 +193,34 @@ class HuffmenEncodeing:
         # extract the codecs and save it to self
         pre_codec_info, bit_string = int(bit_string[:4],base=2), bit_string[4:]
         codec_info, bit_string = int(bit_string[:pre_codec_info],base=2), bit_string[pre_codec_info:]
-        bit_codecs, bit_string = bit_string[-codec_info*8:], bit_string[:-codec_info*8]
-        codecs = self.convert_to_string(bit_codecs)
-        for pair in codecs.split(sep="*;*"):
-            key,value = pair.split(sep="*:*")
-            self.reversed_codecs[key] = value
+        bit_codecs, bit_string = bit_string[-codec_info:], bit_string[:-codec_info]
 
-        # return modified bit_string
+        bits_for_char_len, codecs= int(bit_codecs[:4],base=2),bit_codecs[4:]
+        bits_needed_to_store_code_len,codecs = int(codecs[:4],base=2),codecs[4:]
+        encoded_chars_len, codecs = int(codecs[:bits_for_char_len],base=2),codecs[bits_for_char_len:]
+        chars_in_bit_st, values = codecs[:encoded_chars_len*8],codecs[encoded_chars_len*8:]
+        chars = self.convert_to_string(chars_in_bit_st)
+        value_list = []
+        while values:
+            next_code_len,values = int(values[:bits_needed_to_store_code_len],base=2),\
+                              values[bits_needed_to_store_code_len:]
+            next_code_value,values = values[:next_code_len],\
+                                     values[next_code_len:]
+            value_list.append(next_code_value)
+        for code,char in zip(value_list,chars):
+            self.reversed_codecs[code] = char
         return bit_string
+
 
     def decode_bit_string(self, bit_string):
 
         cur_bits = ""
         cur_string = ""
-        print(self.reversed_codecs)
         for bit in bit_string:
-            # print(bit)
             cur_bits+=bit
             if cur_bits in self.reversed_codecs:
                 cur_string+= self.reversed_codecs[cur_bits]
                 cur_bits=""
-        print(cur_string)
         return cur_string
 
     def compress(self):
@@ -216,8 +256,7 @@ class HuffmenEncodeing:
             byte = input_file.read(1)
             bit_string = ""
             while len(byte)>0:
-                if byte[0]!=ord(byte):
-                    print(byte[0],ord(byte))
+
                 bit_string+=bin(ord(byte))[2:].rjust(8,'0')
                 byte = input_file.read(1)
             bit_string = self.remove_padding(bit_string)

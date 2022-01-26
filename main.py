@@ -33,19 +33,19 @@ if __name__ == "__main__":
             exit()
     except FileNotFoundError as e:
         print(colored_string('\33[31',"file path: {e.filename} \ndoes not exists"))
-    except UnicodeDecodeError as e:
-        if cmd=='compress':
-            msg = """
-                you are probably trying to compress a non-text file.
-                if that is the case. please try with a text file.
-                this application does not support compressing for image or autdio/video file.
-                
-                the other reason could be that you are trying to compress an already
-                compressed file.
-            """
-        else:
-            msg = """
-                you are probably trying to decompress a file that is not
-                compressed using this application
-            """
-        print(colored_string('\33[31m',msg))
+    # except UnicodeDecodeError as e:
+    #     if cmd=='compress':
+    #         msg = """
+    #             you are probably trying to compress a non-text file.
+    #             if that is the case. please try with a text file.
+    #             this application does not support compressing for image or autdio/video file.
+    #
+    #             the other reason could be that you are trying to compress an already
+    #             compressed file.
+    #         """
+    #     else:
+    #         msg = """
+    #             you are probably trying to decompress a file that is not
+    #             compressed using this application
+    #         """
+    #     print(colored_string('\33[31m',msg))
