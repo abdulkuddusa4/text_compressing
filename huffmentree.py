@@ -1,5 +1,5 @@
 import math
-import os
+import os,sys
 
 colored_string = lambda color_code,msg:f"{color_code}{msg}\33[0;30m"
 
@@ -17,7 +17,6 @@ class HuffmenEncodeing:
         else:
             path, file = os.path.split(self.file_path)
             self.output_path = os.path.join(path,f"{file.split('.')[0]}.bin")
-
 
     class HuffmenTreeNode:
         def __init__(self, super_self, ch=None,value=None):
@@ -136,7 +135,6 @@ class HuffmenEncodeing:
         chars_in_bit_st = self.convert_to_bit_string(encoded_chars)
 
         bits_for_encoded_chars_len = math.ceil(math.log2(encoded_chars_len))
-        bits_for_prefix_code_len = math.ceil(math.log2(bits_needed_to_store_code_len))
 
         codecs = bin(bits_for_encoded_chars_len)[2:].rjust(4,'0')\
                 +bin(bits_needed_to_store_code_len)[2:].rjust(4,'0')\
@@ -144,20 +142,10 @@ class HuffmenEncodeing:
                 +chars_in_bit_st+values
         return codecs
 
-
-
-
-# vaues
-
-
-
     def add_reversed_codecs(self, bit_st):
-
-
         r_codecs_bit_string = self.get_reversed_codecs_in_bit_st()
         codec_len = len(r_codecs_bit_string)
         codec_info_len = math.ceil(math.log2(codec_len+1))
-        print(codec_info_len)
         modified_bit_st = bin(codec_info_len)[2:].rjust(4,'0')\
                             +bin(codec_len)[2:].rjust(codec_info_len,'0')\
                             +bit_st+r_codecs_bit_string
@@ -211,7 +199,6 @@ class HuffmenEncodeing:
             self.reversed_codecs[code] = char
         return bit_string
 
-
     def decode_bit_string(self, bit_string):
 
         cur_bits = ""
@@ -225,7 +212,6 @@ class HuffmenEncodeing:
 
     def compress(self):
         # read the text from the file
-
         with open(self.file_path,'r') as input_file, open(self.output_path, 'wb') as output_file:
             text = ''.join(input_file.readlines())
             p_list = self.get_priority_que(text)
@@ -243,8 +229,8 @@ class HuffmenEncodeing:
             """
             print(colored_string('\33[;31m',msg),end='')
             msg = """
-                The result could be a nightmare when you'll see that 
-                the compressed file is larger that it's original size.
+                The result could be a nightmare when you'll see 
+                the compressed file is larger than it's original size.
             """
             print(colored_string('\33[1;31m',msg))
 
