@@ -124,7 +124,6 @@ class HuffmenEncodeing:
         for i in self.reversed_codecs.keys():
             max_code_len = len(i) if len(i)>max_code_len  else max_code_len
 
-
         bits_needed_to_store_code_len = math.ceil(math.log2(max_code_len+1))
         for value,key in self.reversed_codecs.items():
             values+=bin(len(value))[2:].rjust(bits_needed_to_store_code_len,'0')+value
@@ -233,7 +232,6 @@ class HuffmenEncodeing:
                 the compressed file is larger than it's original size.
             """
             print(colored_string('\33[1;31m',msg))
-
 
     def decompress(self):
         path, file = os.path.split(self.file_path)
