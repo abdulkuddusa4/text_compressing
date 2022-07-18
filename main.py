@@ -49,3 +49,5 @@ if __name__ == "__main__":
                 compressed using this application
             """
         print(colored_string('\33[31m',msg))
+
+

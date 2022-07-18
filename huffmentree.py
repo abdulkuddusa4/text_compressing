@@ -211,7 +211,7 @@ class HuffmenEncodeing:
 
     def compress(self):
         # read the text from the file
-        with open(self.file_path,'r') as input_file, open(self.output_path, 'wb') as output_file:
+        with open(self.file_path,'r',encoding='utf') as input_file, open(self.output_path, 'wb') as output_file:
             text = ''.join(input_file.readlines())
             p_list = self.get_priority_que(text)
 
@@ -236,7 +236,7 @@ class HuffmenEncodeing:
     def decompress(self):
         path, file = os.path.split(self.file_path)
         output_path = os.path.join(path,f"{file.split('.')[0]}.txt")
-        with open(self.file_path,'rb') as input_file, open(output_path, 'w') as output_file:
+        with open(self.file_path,'rb') as input_file, open(output_path, 'w',encoding='utf-8') as output_file:
             byte = input_file.read(1)
             bit_string = ""
             while len(byte)>0:
