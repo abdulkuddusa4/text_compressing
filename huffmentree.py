@@ -211,7 +211,7 @@ class HuffmenEncodeing:
 
     def compress(self):
         # read the text from the file
-        with open(self.file_path,'r',encoding='utf') as input_file, open(self.output_path, 'wb') as output_file:
+        with open(self.file_path,'r',encoding='utf-8') as input_file, open(self.output_path, 'wb') as output_file:
             text = ''.join(input_file.readlines())
             p_list = self.get_priority_que(text)
 
